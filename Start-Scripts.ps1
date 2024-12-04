@@ -19,9 +19,9 @@ function Start-Scripts {
     Get-ChildItem -Path .\utils\*.ps1 | ForEach-Object { . $($_.FullName) }
 
     # Get and run scripts
-    $scripts = Get-ChildItem ".\$ScriptDir\*.ps1"
-    foreach ($script in $scripts) {
-        & $scripts.FullName
+    $ScriptsList = Get-ChildItem ".\$ScriptDir\*.ps1"
+    foreach ($CurrentScript in $ScriptsList) {
+        & $CurrentScript.FullName
     }
 
     # Return to original directory
