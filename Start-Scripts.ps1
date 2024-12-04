@@ -1,4 +1,3 @@
-$ScriptsPath = "C:\Users\user\Documents\Playnite Global Scripts"
 $ValidDirs = @("pre", "post", "exit")
 
 function Start-Scripts {
@@ -13,8 +12,8 @@ function Start-Scripts {
         throw "Start-Scripts: '$ScriptDir' is not a valid script directory!"
     }
 
-    #Use current directory as scripts location
-    Push-Location $ScriptsPath
+    #Use script directory as a reference position
+    Push-Location $PSScriptRoot
 
     #Import all utils
     Get-ChildItem -Path .\utils\*.ps1 | ForEach-Object { . $($_.FullName) }
