@@ -14,7 +14,7 @@ function Get-GameAction {
     # We expect that the script returns an appropriate GameActions instance
     $GameAction = & $GameActionPath
     if ($null -eq $GameAction -or $GameAction.GetType().FullName -ne [GameActions]) {
-        throw "Invalid GameAction for $GameName on:`n $GameActionPath"
+        throw "Get-GameAction: Invalid GameAction for $GameName on:`n $GameActionPath"
     }
     $GameAction
 }
