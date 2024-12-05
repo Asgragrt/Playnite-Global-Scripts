@@ -36,7 +36,8 @@ function Open-App {
     param(
         [String]$AppPath,
         [String]$AppProcessName,
-        [String]$AppArguments
+        [String]$AppArguments,
+        [String]$AppWindowStyle
     )
 
     if ([string]::IsNullOrWhiteSpace($AppPath)) {
@@ -68,5 +69,8 @@ function Open-App {
     $appInfo.FileName = $AppPath
     $appInfo.WorkingDirectory = $appWD
     $appInfo.Arguments = $AppArguments
+    if (![string]::IsNullOrWhiteSpace($AppWindowStyle)) {
+        $appInfo.WindowStyle = $AppWindowStyle
+    }
     [System.Diagnostics.Process]::Start($appInfo)
 }
