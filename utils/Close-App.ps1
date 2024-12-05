@@ -1,7 +1,7 @@
 function Close-App {
     param (
         [scriptblock]$ProcessFilter,
-        [int]$CloseDelay
+        [int]$CloseDelay = 0
     )
 
     if ($CloseDelay -lt 0) {
