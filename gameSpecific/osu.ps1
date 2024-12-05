@@ -5,6 +5,6 @@ $osu.PreAction = {
     Open-App $OpenTableDriverPath "OpenTabletDriver.Daemon" -AppWindowStyle "Minimized"
 }
 $osu.ExitAction = {
-    Close-App { $_.ProcessName -match 'OpenTabletDriver' }
+    Close-App 'OpenTabletDriver'
 }
 $osu

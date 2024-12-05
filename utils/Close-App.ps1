@@ -1,16 +1,34 @@
 function Close-App {
     param (
-        [scriptblock]$ProcessFilter,
+        [string]$ProcessName,
+        [string]$ProcessPath,
         [int]$CloseDelay = 0
     )
+
+    if ([string]::IsNullOrWhiteSpace($ProcessName)) {
+        throw "Close-App: Please specify the value of '`$ProcessName'!"
+    }
 
     if ($CloseDelay -lt 0) {
         throw "Close-Delayed: '`$CloseDelay' should be greater than or equal to 0"
     }
 
-    $process = Get-Process | Where-Object $ProcessFilter
+    if (![string]::IsNullOrWhiteSpace($ProcessPath)) {
+        # $_.ProcessName -match $AppProcessName -or
+        $processFilter = { $_.ProcessName -match $ProcessName -or $pinvoke::GetProcessPath($_.Id) -match $ProcessPath }
+    }
+    else {
+        $processFilter = { $_.ProcessName -match $ProcessName }
+    }
+
+    $process = Get-Process | Where-Object $processFilter
     if (!$process) {
         Exit 0
+    }
+
+    $processCount = $process  | Measure-Object | Select-Object -ExpandProperty Count
+    if ($processCount -gt 5) {
+        throw "More than 5 process will be stopped, canceling script!`nPlease review the filter."
     }
 
     # Run as a job to avoid blocking the other scripts
