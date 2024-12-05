@@ -2,7 +2,8 @@ function Close-App {
     param (
         [string]$ProcessName,
         [string]$ProcessPath,
-        [int]$CloseDelay = 0
+        [int]$CloseDelay = 0,
+        [int]$MaxProcessCount = 5
     )
 
     if ([string]::IsNullOrWhiteSpace($ProcessName)) {
@@ -10,7 +11,11 @@ function Close-App {
     }
 
     if ($CloseDelay -lt 0) {
-        throw "Close-Delayed: '`$CloseDelay' should be greater than or equal to 0"
+        throw "Close-App: '`$CloseDelay' should be greater than or equal to 0"
+    }
+
+    if ($MaxProcessCount -lt 1) {
+        throw "Close-App: '`$MaxProcessCount' should be greater than or equal to 1"
     }
 
     if (![string]::IsNullOrWhiteSpace($ProcessPath)) {
@@ -27,8 +32,8 @@ function Close-App {
     }
 
     $processCount = $process  | Measure-Object | Select-Object -ExpandProperty Count
-    if ($processCount -gt 5) {
-        throw "More than 5 process will be stopped, canceling script!`nPlease review the filter."
+    if ($processCount -gt $MaxProcessCount) {
+        throw "Close-App: More than $MaxProcessCount process will be stopped, canceling script!`nPlease review the filter."
     }
 
     # Run as a job to avoid blocking the other scripts
