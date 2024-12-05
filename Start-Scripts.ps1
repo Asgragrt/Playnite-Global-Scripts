@@ -18,11 +18,14 @@ function Start-Scripts {
     #Import all utils
     Get-ChildItem -Path .\utils\*.ps1 | ForEach-Object { . $($_.FullName) }
 
-    # Get and run scripts
+    # Get and run global scripts
     $ScriptsList = Get-ChildItem ".\$ScriptDir\*.ps1"
     foreach ($CurrentScript in $ScriptsList) {
         & $CurrentScript.FullName
     }
+
+    # Get and run game-specific scripts
+    Start-GameAction $Game.Name $ScriptDir
 
     # Return to original directory
     Pop-Location
