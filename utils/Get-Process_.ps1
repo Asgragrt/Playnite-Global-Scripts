@@ -38,12 +38,22 @@ function Get-Process_ {
         [String]$AppProcessName
     )
 
-    #Make filter
-    if (![string]::IsNullOrWhiteSpace($AppProcessName)) {
-        $processFilter = { $pinvoke::GetProcessPath($_.Id) -eq $AppPath -or $_.ProcessName -match $AppProcessName }
+    $ValidPath = ![string]::IsNullOrWhiteSpace($AppPath)
+    $ValidName = ![string]::IsNullOrWhiteSpace($AppProcessName)
+
+    if (!$ValidPath -and !$ValidName) {
+        throw "Get-Process_: Please specify valid values"
     }
-    else {
-        $processFilter = { $pinvoke::GetProcessPath($_.Id) -eq $AppPath }
+
+    #Make filter
+    $processFilter = if ($ValidPath -and $ValidName) {
+        { $pinvoke::GetProcessPath($_.Id) -eq $AppPath -or $_.ProcessName -match $AppProcessName }
+    }
+    elseif ($ValidPath) {
+        { $pinvoke::GetProcessPath($_.Id) -eq $AppPath }
+    }
+    elseif ($ValidName) {
+        { $_.ProcessName -match $AppProcessName }
     }
 
     Get-Process | Where-Object $processFilter
