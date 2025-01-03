@@ -18,15 +18,7 @@ function Close-App {
         throw "Close-App: '`$MaxProcessCount' should be greater than or equal to 1"
     }
 
-    if (![string]::IsNullOrWhiteSpace($ProcessPath)) {
-        # $_.ProcessName -match $AppProcessName -or
-        $processFilter = { $_.ProcessName -match $ProcessName -or $pinvoke::GetProcessPath($_.Id) -match $ProcessPath }
-    }
-    else {
-        $processFilter = { $_.ProcessName -match $ProcessName }
-    }
-
-    $process = Get-Process | Where-Object $processFilter
+    $process = Get-Process_ $ProcessName $ProcessPath
     if (!$process) {
         Exit 0
     }
