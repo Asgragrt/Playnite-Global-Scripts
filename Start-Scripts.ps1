@@ -19,10 +19,7 @@ function Start-Scripts {
     Get-ChildItem -Path .\utils\*.ps1 | ForEach-Object { . $($_.FullName) }
 
     # Get and run global scripts
-    $ScriptsList = Get-ChildItem ".\$ScriptDir\*.ps1"
-    foreach ($CurrentScript in $ScriptsList) {
-        & $CurrentScript.FullName
-    }
+    Get-ChildItem ".\$ScriptDir\*.ps1" | ForEach-Object { & $($_.FullName) }
 
     # Get and run game-specific scripts
     Start-GameAction $Game.Name $ScriptDir
