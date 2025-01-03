@@ -21,7 +21,8 @@ function Set-AppVolume {
 
     $Volume = "$([math]::Round($AppVolume / 100, 2))"
 
-    Get-Process_ $AppPath $AppProcessName | ForEach-Object { 
+    Get-Process_ $AppPath $AppProcessName | ForEach-Object {
+        # https://nircmd.nirsoft.net/setappvolume.html 
         Invoke-Expression "$nircmdCommand setappvolume /$($_.Id) $Volume" 
     }
 } 
