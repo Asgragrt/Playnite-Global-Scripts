@@ -1,13 +1,22 @@
-<# 
-    Map partial name to file
-    Key     - A valid wildcard for the game name
-    Value   - A valid script name on the `gameSpecific` directory
-#>
-$GamesMap = @{
-    "osu" = "osu"
-}
-
 class GameActions {
+    GameAction([string]$Name, [scriptblock] $PreAction, [scriptblock] $PostAction, [scriptblock] $ExitAction) {
+        $this.Init(@{
+                Name       = $Name;
+                PreAction  = $PreAction;
+                PostAction = $PostAction;
+                ExitAction = $ExitAction;
+            })
+    }
+    GameActions([hashtable]$Properties) { $this.Init($Properties) }
+    [void] Init([hashtable]$Properties) {
+        foreach ($Property in $Properties.Keys) {
+            $this.$Property = $Properties.$Property
+        }
+        if ([string]::IsNullOrWhiteSpace($this.Name)) {
+            throw "GameAction: Game missing name."
+        }
+    }
+    [String] $Name
     [scriptblock] $PreAction
     [scriptblock] $PostAction
     [scriptblock] $ExitAction
@@ -18,7 +27,20 @@ function Get-GameScriptName {
         [String]$GameName
     )
 
-    $GamesMap.GetEnumerator() | Where-Object { $GameName -match $_.Key } | Select-Object -ExpandProperty Value
+    # $GamesMap.GetEnumerator() | Where-Object { $GameName -match $_.Key } | Select-Object -ExpandProperty Value
+    Get-ChildItem .\gameSpecific\*.ps1 | ForEach-Object {
+        $GameScriptPath = $_.FullName
+        try {
+            $GameObj = & $($_.FullName) 
+        }
+        catch {
+            throw "$($_.Exception.Message)`nat: $($GameScriptPath)"
+        }
+
+        if ($GameName -match $GameObj.Name) {
+            $GameObj
+        }
+    }
 }
 
 function Get-GameAction {
