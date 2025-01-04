@@ -22,45 +22,28 @@ class GameActions {
     [scriptblock] $ExitAction
 }
 
-function Get-GameScriptName {
+function Get-GameAction {
     param(
         [String]$GameName
     )
 
-    # $GamesMap.GetEnumerator() | Where-Object { $GameName -match $_.Key } | Select-Object -ExpandProperty Value
-    Get-ChildItem .\gameSpecific\*.ps1 | ForEach-Object {
-        $GameScriptPath = $_.FullName
+    $GameAction = $null
+    $GameScripts = Get-ChildItem .\gameSpecific\*.ps1
+    foreach ($GmScript in $GameScripts) {
+        $GameScriptPath = $GmScript.FullName
         try {
-            $GameObj = & $($_.FullName) 
+            $GameObj = & $($GmScript.FullName) 
         }
         catch {
             throw "$($_.Exception.Message)`nat: $($GameScriptPath)"
         }
 
         if ($GameName -match $GameObj.Name) {
-            $GameObj
+            $GameAction = $GameObj
+            break
         }
     }
-}
 
-function Get-GameAction {
-    param(
-        [String]$GameName
-    )
-
-    $GameActionName = Get-GameScriptName $GameName
-
-    $CurrentLocation = Get-Location
-    $GameActionPath = "$CurrentLocation\gameSpecific\$GameActionName.ps1"
-    if ([string]::IsNullOrWhiteSpace($GameActionName) -or ![System.IO.File]::Exists($GameActionPath)) {
-        return
-    }
-
-    # We expect that the script returns an appropriate GameActions instance
-    $GameAction = & $GameActionPath
-    if ($null -eq $GameAction -or $GameAction.GetType().FullName -ne [GameActions]) {
-        throw "Get-GameAction: Invalid GameAction for $GameName on:`n $GameActionPath"
-    }
     $GameAction
 }
 
