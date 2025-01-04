@@ -40,7 +40,6 @@ function Get-GameAction {
 
         if ($GameName -match $GameObj.Name) {
             $GameAction = $GameObj
-            break
         }
     }
 
