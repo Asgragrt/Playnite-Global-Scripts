@@ -18,7 +18,7 @@ function Close-App {
         throw "Close-App: '`$MaxProcessCount' should be greater than or equal to 1"
     }
 
-    $process = Get-Process_ $ProcessName $ProcessPath
+    $process = Get-Process_ $ProcessPath $ProcessName
     if (!$process) {
         Exit 0
     }
