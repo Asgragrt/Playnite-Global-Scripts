@@ -20,7 +20,7 @@ function Close-App {
 
     $process = Get-Process_ $ProcessPath $ProcessName
     if (!$process) {
-        Exit 0
+        return
     }
 
     $processCount = $process  | Measure-Object | Select-Object -ExpandProperty Count
@@ -28,18 +28,23 @@ function Close-App {
         throw "Close-App: More than $MaxProcessCount process will be stopped, canceling script!`nPlease review the filter."
     }
 
-    # Run as a job to avoid blocking the other scripts
-    Start-Job -ScriptBlock {
-        param ($ProcessId, $Delay)
+    if ($CloseDelay -le 0) {
+        Stop-Process -Id $process.Id
+    }
+    else {
+        # Run as a job to avoid blocking the other scripts
+        Start-Job -ScriptBlock {
+            param ($ProcessId, $Delay)
 
-        #Wait a little bit before killing the process
-        Start-Sleep -s $Delay
+            #Wait a little bit before killing the process
+            Start-Sleep -s $Delay
 
-        # Check again if the process still exists
-        if (!(Get-Process -Id $ProcessId)) {
-            Exit 0
-        }
+            # Check again if the process still exists
+            if (!(Get-Process -Id $ProcessId)) {
+                return
+            }
 
-        Stop-Process -Id $ProcessId
-    } -ArgumentList $process.Id, $CloseDelay
+            Stop-Process -Id $ProcessId
+        } -ArgumentList $process.Id, $CloseDelay
+    }
 }

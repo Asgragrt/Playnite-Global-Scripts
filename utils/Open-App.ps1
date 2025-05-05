@@ -19,7 +19,7 @@ function Open-App {
     # Check if process is running
     $isAlreadyRunning = Get-Process_ $AppPath $AppProcessName
     if ($isAlreadyRunning) {
-        Exit 0
+        return
     }
 
     $appWD = [System.IO.Path]::GetDirectoryName($AppPath)
